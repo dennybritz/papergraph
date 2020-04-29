@@ -1,5 +1,6 @@
 use diesel::prelude::*;
 use papergraph;
+use papergraph::db::models;
 use papergraph::io::Paper;
 use serde_json;
 use std::fs::File;
@@ -61,7 +62,7 @@ fn main() {
     records.for_each(|record| {
         // Insert paper
         diesel::insert_into(papergraph::db::schema::papers::table)
-            .values(&papergraph::db::models::Paper {
+            .values(&models::Paper {
                 id: record.id.clone(),
                 title: record.title.clone(),
                 year: record.year.map(|y| y as i16),
@@ -72,27 +73,70 @@ fn main() {
             .execute(&conn)
             .expect("error storing paper");
 
+        // Insert authors
+        let authors: Vec<models::Author> = record
+            .authors
+            .iter()
+            // TODO: Is it correct to filter out authors without ID!?
+            .filter(|a| a.ids.len() > 0)
+            .map(|a| models::Author {
+                id: a.ids.get(0).unwrap().clone(),
+                name: a.name.clone(),
+            })
+            .collect();
+
+        diesel::insert_into(papergraph::db::schema::authors::table)
+            .values(&authors)
+            .on_conflict(papergraph::db::schema::authors::id)
+            .do_nothing()
+            .execute(&conn)
+            .expect("error storing authors");
+
+        // Insert author relationships
+        let paper_authors: Vec<models::PaperAuthor> = authors.iter().map(|a|
+            models::PaperAuthor {
+                paper_id: &record.id,
+                author_id: &a.id,
+            }
+        ).collect();
+
+        diesel::insert_into(papergraph::db::schema::paper_authors::table)
+            .values(&paper_authors)
+            .on_conflict((papergraph::db::schema::paper_authors::paper_id, papergraph::db::schema::paper_authors::author_id))
+            .do_nothing()
+            .execute(&conn)
+            .expect("error storing paper_authors");
+
         // Insert citations
         // TODO: What if we have more than 64k citations - need to batch?
-        let mut citations: Vec<papergraph::db::models::Citation> = vec![];
-        citations.extend(record.out_citations.iter().map(|to_paper| {
-            papergraph::db::models::Citation {
-                from_paper: &record.id,
-                to_paper: to_paper,
-            }
-        }));
-        citations.extend(record.in_citations.iter().map(|from_paper| {
-            papergraph::db::models::Citation {
-                from_paper: from_paper,
-                to_paper: &record.id,
-            }
-        }));
+        let mut citations: Vec<models::Citation> = vec![];
+        citations.extend(
+            record
+                .out_citations
+                .iter()
+                .map(|to_paper| models::Citation {
+                    from_paper: &record.id,
+                    to_paper: to_paper,
+                }),
+        );
+        citations.extend(
+            record
+                .in_citations
+                .iter()
+                .map(|from_paper| models::Citation {
+                    from_paper: from_paper,
+                    to_paper: &record.id,
+                }),
+        );
 
         diesel::insert_into(papergraph::db::schema::citations::table)
             .values(&citations)
-            .on_conflict((papergraph::db::schema::citations::from_paper, papergraph::db::schema::citations::to_paper))
-            .do_nothing()             
-            .execute(&conn)           
+            .on_conflict((
+                papergraph::db::schema::citations::from_paper,
+                papergraph::db::schema::citations::to_paper,
+            ))
+            .do_nothing()
+            .execute(&conn)
             .expect("error storing citatins");
         log::debug!("inserted {} [{} citations]", &record.id, citations.len());
     });
