@@ -1,3 +1,4 @@
+.db
 /target
 Cargo.lock
 
@@ -34,3 +35,11 @@ Temporary Items
 .apdisk
 
 # End of https://www.gitignore.io/api/macos
+
+# Created by https://www.gitignore.io/api/dotenv
+# Edit at https://www.gitignore.io/?templates=dotenv
+
+### dotenv ###
+.env
+
+# End of https://www.gitignore.io/api/dotenv
