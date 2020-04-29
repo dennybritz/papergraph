@@ -1,0 +1,71 @@
+- table:
+    schema: public
+    name: authors
+- table:
+    schema: public
+    name: citations
+  object_relationships:
+  - name: from
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: papers
+        column_mapping:
+          from_paper: id
+  - name: to
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: papers
+        column_mapping:
+          to_paper: id
+- table:
+    schema: public
+    name: paper_authors
+  object_relationships:
+  - name: author
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: authors
+        column_mapping:
+          author_id: id
+  - name: paper
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: papers
+        column_mapping:
+          paper_id: id
+- table:
+    schema: public
+    name: papers
+  array_relationships:
+  - name: authors
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: paper_authors
+        column_mapping:
+          id: paper_id
+  - name: cited_by
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: citations
+        column_mapping:
+          id: to_paper
+  - name: cites
+    using:
+      manual_configuration:
+        remote_table:
+          schema: public
+          name: citations
+        column_mapping:
+          id: from_paper
