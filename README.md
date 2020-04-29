@@ -1,8 +1,10 @@
 # papergraph
 
-Papergraph is a rust library and binary to build the citation graph of [Semantic Scholar](https://www.semanticscholar.org/), focused on AI/ML papers (for now). Data is stored in a postgres database with a [Hasura](https://hasura.io/) GraphQL backend on top for easy graph queries. It comes with several Jupyter notebooks that help you to analyze and visualize the data.
+## **THIS IS WORK IN PROGRESS!** 
 
-In the future, papergraph may come with a frontend that allows you to interactively explore the graph.
+papergraph is a rust library and binary to build and manage a citation graph of [Semantic Scholar](https://www.semanticscholar.org/), focused on AI/ML papers (for now). Data is stored in a postgres database with a [Hasura](https://hasura.io/) GraphQL backend on top for easy graph queries. It comes with Jupyter notebooks that show you how to analyze and visualize the data.
+
+In the future, papergraph may ship with a frontend that allows you to interactively explore the graph.
 
 ## Use Cases
 
@@ -37,7 +39,6 @@ If you want to build the database from scratch, you must download the full [S2 r
 aws s3 sync --no-sign-request s3://ai2-s2-research-public/open-corpus/2020-04-10/ data/s2-research-corpus
 ```
 
-
 ## Local Usage
 
 Start a postgres and Hasura server in a docker container:
@@ -46,7 +47,7 @@ Start a postgres and Hasura server in a docker container:
 docker-compose up
 
 # The Hasura console to run queries is now available at 
-# http://localhost:8080/console
+open http://localhost:8080/console
 ```
 
 If you have an existig postgres data dump, load it into postgres:
@@ -56,11 +57,11 @@ If you have an existig postgres data dump, load it into postgres:
 pg_dump
 ```
 
-If you want to build your own database from a raw data dump, you must load it manually:
+If you want to build your own database from a raw data dump you have to load it manually:
 
 ```bash
 # TODO - this will take a while
-cargo run --release --bin insert -- -d DATA_PATH 
+cargo run --release -- insert -d $DATA_PATH 
 ```
 
 
@@ -74,4 +75,10 @@ Generating postgres database dumps
 
 ```bash
 pg_dump -h localhost -p 15432 -F tar -U papergraph papergraph > pg_dump.tar
+```
+
+Build docker image
+
+```bash
+docker build -t papergraph/papergraph .
 ```
