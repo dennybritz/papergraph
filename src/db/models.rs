@@ -3,9 +3,9 @@ use diesel::{Identifiable, Insertable, Queryable};
 
 #[derive(Debug, Identifiable, Insertable, Queryable, AsChangeset)]
 #[table_name = "papers"]
-pub struct Paper {
-    pub id: String,
-    pub title: String,
+pub struct Paper<'a> {
+    pub id: &'a str,
+    pub title: &'a str,
     pub year: Option<i16>,
 }
 
@@ -18,9 +18,9 @@ pub struct Citation<'a> {
 
 #[derive(Debug, Identifiable, Insertable, Queryable, AsChangeset)]
 #[table_name = "authors"]
-pub struct Author {
-    pub id: String,
-    pub name: String,
+pub struct Author<'a> {
+    pub id: &'a str,
+    pub name: &'a str,
 }
 
 #[derive(Debug, Insertable, Queryable, AsChangeset)]

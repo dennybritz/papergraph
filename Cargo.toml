@@ -19,5 +19,5 @@ itertools = "0.9.0"
 
 
 [[bin]]
-name = "insert"
-path = "src/bin/insert.rs"
+name = "papergraph"
+path = "src/bin/papergraph.rs"
