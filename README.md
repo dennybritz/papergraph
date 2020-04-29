@@ -1,36 +1,77 @@
 # papergraph
 
-Papergraph is a rust library to build and analyze the citation graph of [Semantic Scholar](https://www.semanticscholar.org/), focused on AI/ML papers (for now). It comes with a frontend to explore the citation graph. The backend is a simple postgresql database.
+Papergraph is a rust library and binary to build the citation graph of [Semantic Scholar](https://www.semanticscholar.org/), focused on AI/ML papers (for now). Data is stored in a postgres database with a [Hasura](https://hasura.io/) GraphQL backend on top for easy graph queries. It comes with several Jupyter notebooks that help you to analyze and visualize the data.
 
-## Usage
-
-```bash
-# Download database snapshot: TODO
-# TODO
-```
-
-Start the UI
-
-```bash
-# TODO
-```
+In the future, papergraph may come with a frontend that allows you to interactively explore the graph.
 
 ## Use Cases
 
 ### 1. Finding landmark papers
 
-Papers with a large citations count can be considered landmark papers. The techniques describes in such papers typically form the foundation of further incremental improvements. Given an arbitrary (non-landmark) paper, you may want to know which landmark papers you should study to gain the necessary background knowledge.
+Notebook: TODO
+
+Papers with a large citations count can be considered landmark papers. The techniques describes in such papers typically form the foundation of further incremental improvements. Given an arbitrary (non-landmark) paper, you may want to know which landmark papers you should study to gain the required background knowledge.
 
 ### 2. Reference Search
 
+Notebook: TODO
+
 When writing a paper, you don't want to miss an important reference. 
+
+### 3. Graph Analysis
+
+Notebook: TODO
+
+
+## Downloading Data
+
+The easiest way is to download an existing postgresql data dump (~2GB). To keep the size relatively small, this dataset only contains a subset of papers from Computer Science. Papers with no citations are excluded.
+
+```bash
+# TODO
+```
+
+If you want to build the database from scratch, you must download the full [S2 research corpus](http://s2-public-api-prod.us-west-2.elasticbeanstalk.com/corpus/download/). The total compressed size is currently around ~120GB.
+
+```
+aws s3 sync --no-sign-request s3://ai2-s2-research-public/open-corpus/2020-04-10/ data/s2-research-corpus
+```
+
+
+## Local Usage
+
+Start a postgres and Hasura server in a docker container:
+
+```bash
+docker-compose up
+
+# The Hasura console to run queries is now available at 
+# http://localhost:8080/console
+```
+
+If you have an existig postgres data dump, load it into postgres:
+
+```bash
+# TODO 
+pg_dump
+```
+
+If you want to build your own database from a raw data dump, you must load it manually:
+
+```bash
+# TODO - this will take a while
+cargo run --release --bin insert -- -d DATA_PATH 
+```
 
 
 ## Freshness
 
 `papergraph` is updated when new [data snapshots](http://s2-public-api-prod.us-west-2.elasticbeanstalk.com/corpus/download/) become available. This typically happens once a month. This means it will not contain all the latest papers.
 
-## Usage from Python
+## Misc
 
-`papergraph` comes with Python bindings.
+Generating postgres database dumps
 
+```bash
+pg_dump -h localhost -p 15432 -F tar -U papergraph papergraph > pg_dump.tar
+```

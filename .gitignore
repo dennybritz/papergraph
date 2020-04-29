@@ -1,6 +1,7 @@
 .db
 /target
 Cargo.lock
+data/s2-research-corpus
 
 
 # Created by https://www.gitignore.io/api/macos
