@@ -27,9 +27,4 @@ table! {
     }
 }
 
-allow_tables_to_appear_in_same_query!(
-    authors,
-    citations,
-    paper_authors,
-    papers,
-);
+allow_tables_to_appear_in_same_query!(authors, citations, paper_authors, papers,);
