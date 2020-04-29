@@ -1,5 +1,6 @@
 use clap::Clap;
 use dotenv::dotenv;
+use flate2::read::GzDecoder;
 use papergraph::io::Paper;
 use serde_json;
 use std::env;
@@ -54,9 +55,14 @@ fn insert(opts: Insert) {
 
     log::info!("reading records from {}", &opts.data);
     let file = File::open(&opts.data).expect("failed to open data file");
+    let reader: Box<dyn BufRead> = if opts.data.ends_with(".gz") {
+        Box::new(io::BufReader::new(GzDecoder::new(file)))
+    } else {
+        Box::new(io::BufReader::new(file))
+    };
 
     let min_citations = opts.min_citations;
-    let records = io::BufReader::new(file)
+    let records = reader
         .lines()
         .map(|l| l.expect("failed to read line"))
         .map(|l| serde_json::from_str(&l).expect("failed to parse paper"))
