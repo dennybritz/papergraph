@@ -1,6 +1,7 @@
 use clap::Clap;
 use dotenv::dotenv;
 use flate2::read::GzDecoder;
+use itertools::Itertools;
 use papergraph::io::Paper;
 use serde_json;
 use std::env;
@@ -73,11 +74,14 @@ fn insert(opts: Insert) {
                 .any(|fos| p.fields_of_study.contains(fos))
         });
 
-    // TODO: batch this
-    records.for_each(|record| {
-        papergraph::db::utils::insert_from_s2_record(&conn, &record)
-            .expect("database insert failed");
-    });
+    for chunk in &records.chunks(4096) {
+        let mut batch = papergraph::db::utils::RecordBatch::new();
+        let papers: Vec<Paper> = chunk.collect();
+        for paper in papers.iter() {
+            batch.append(&mut papergraph::db::utils::s2_record_to_batch(paper));
+        }
+        batch.insert(&conn).expect("database insert failed");
+    }
 }
 
 fn main() {
