@@ -33,7 +33,7 @@ impl<'a> RecordBatch<'a> {
         let chunk_size = 8192;
 
         // TODO: Should we upsert here?
-        log::debug!("inserting {} papers", &self.papers.len());
+        log::info!("inserting {} papers", &self.papers.len());
         for papers in &self.papers.iter().chunks(chunk_size) {
             let papers: Vec<&models::Paper<'a>> = papers.collect();
             diesel::insert_into(schema::papers::table)
@@ -42,7 +42,7 @@ impl<'a> RecordBatch<'a> {
                 .execute(conn)?;
         }
 
-        log::debug!("inserting {} authors", &self.authors.len());
+        log::info!("inserting {} authors", &self.authors.len());
         for chunk in &self.authors.iter().chunks(chunk_size) {
             let chunk: Vec<&models::Author<'a>> = chunk.collect();
             diesel::insert_into(schema::authors::table)
@@ -59,7 +59,7 @@ impl<'a> RecordBatch<'a> {
                 .execute(conn)?;
         }
 
-        log::debug!("inserting {} citations", &self.citations.len());
+        log::info!("inserting {} citations", &self.citations.len());
         for chunk in &self.citations.iter().chunks(chunk_size) {
             let chunk: Vec<&models::Citation<'a>> = chunk.collect();
             diesel::insert_into(schema::citations::table)

@@ -6,7 +6,7 @@ spec:
   entrypoint: seed-all
   templates:
     - name: seed-all
-      parallelism: 4
+      parallelism: 1
       steps:
         - - name: drop-index
             template: psql
@@ -14,8 +14,8 @@ spec:
               parameters:
                 - name: cmd
                   value: |
-                    DROP INDEX citations_from_paper_idx;
-                    DROP INDEX citations_to_paper_idx;
+                    DROP INDEX IF EXISTS citations_from_paper_idx;
+                    DROP INDEX IF EXISTS citations_to_paper_idx;
         - - name: insert-all
             template: insert
             arguments:
@@ -78,7 +78,7 @@ spec:
         image: dennybritz/papergraph:latest
         env:
           - name: RUST_LOG
-            value: info
+            value: debug
           - name: POSTGRES_PASSWORD
             valueFrom:
               secretKeyRef:
