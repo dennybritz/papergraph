@@ -1,0 +1,37 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: papergraph-hasura
+  labels:
+    app: papergraph
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: papergraph
+      tier: hasura
+  template:
+    metadata:
+      labels:
+        app: papergraph
+        tier: hasura
+    spec:
+      containers:
+        - name: hasura
+          image: hasura/graphql-engine:v1.2.0.cli-migrations-v2
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: papergraph-cred
+                  key: postgres-password
+            - name: HASURA_GRAPHQL_DATABASE_URL
+              value: postgres://papergraph:$(POSTGRES_PASSWORD)@papergraph-postgres:5432/papergraph
+            - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+              value: "true"
+            - name: HASURA_GRAPHQL_ENABLED_LOG_TYPES
+              value: "startup, http-log, webhook-log, websocket-log, query-log"
