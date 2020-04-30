@@ -1,4 +1,3 @@
-
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
 metadata:
@@ -6,47 +5,91 @@ metadata:
 spec:
   entrypoint: seed-all
   templates:
-  - name: seed-all
-    parallelism: 4
-    steps:
-    - - name: seed-all
-        template: seed
-        arguments:
-          parameters:
-            - name: url
-              value: "{{item}}"
-        withItems:
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-000.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-001.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-002.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-003.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-004.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-005.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-006.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-007.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-008.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-009.gz
-          - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-010.gz
-  - name: seed
-    inputs:
-      parameters:
-      - name: url
-    script:
-      image: dennybritz/papergraph:latest
-      env:
-        - name: RUST_LOG
-          value: info
-        - name: POSTGRES_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: papergraph-cred
-              key: postgres-password
-        - name: DATABASE_URL
-          value: postgres://papergraph:$(POSTGRES_PASSWORD)@papergraph-postgres:5432/papergraph
-        - name: DATA_URL
-          value: "{{inputs.parameters.url}}"
-      command: ["/bin/bash"]
-      source: |
-        echo ${DATA_URL}
-        wget ${DATA_URL}
-        papergraph insert -d $(basename ${DATA_URL})
+    - name: seed-all
+      parallelism: 4
+      steps:
+        - - name: drop-index
+            template: psql
+            arguments:
+              parameters:
+                - name: cmd
+                  value: |
+                    DROP INDEX citations_from_paper_idx;
+                    DROP INDEX citations_to_paper_idx;
+        - - name: insert-all
+            template: insert
+            arguments:
+              parameters:
+                - name: url
+                  value: "{{item}}"
+            withItems:
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-000.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-001.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-002.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-003.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-004.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-005.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-006.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-007.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-008.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-009.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-010.gz
+        - - name: create-index
+            template: psql
+            arguments:
+              parameters:
+                - name: cmd
+                  value: |
+                    CREATE INDEX citations_from_paper_idx ON citations (from_paper);
+                    CREATE INDEX citations_to_paper_idx ON citations (to_paper);                 
+    - name: psql
+      inputs: 
+        parameters:
+          - name: cmd        
+      container:
+        image: postgres:12
+        env:
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: papergraph-cred
+                key: postgres-password
+          - name: PGPASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: papergraph-cred
+                key: postgres-password
+          - name: POSTGRES_USER
+            value: papergraph
+          - name: PGHOST
+            value: papergraph-postgres
+          - name: PGDATABASE
+            value: papergraph
+          - name: PGUSER
+            value: papergraph
+        command: ["psql", "-c"]
+        args: 
+          - "{{inputs.parameters.cmd}}"
+    - name: insert
+      inputs:
+        parameters:
+          - name: url
+      script:
+        image: dennybritz/papergraph:latest
+        env:
+          - name: RUST_LOG
+            value: info
+          - name: POSTGRES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: papergraph-cred
+                key: postgres-password
+          - name: DATABASE_URL
+            value: postgres://papergraph:$(POSTGRES_PASSWORD)@papergraph-postgres:5432/papergraph
+          - name: DATA_URL
+            value: "{{inputs.parameters.url}}"
+        command: ["/bin/bash"]
+        source: |
+          echo ${DATA_URL}
+          wget ${DATA_URL}
+          papergraph insert -d $(basename ${DATA_URL})
