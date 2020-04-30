@@ -8,6 +8,6 @@ RUN cargo install --path .
 # Serving container
 FROM debian:buster-slim
 
-RUN apt-get update && apt-get install -y libpq-dev
+RUN apt-get update && apt-get install -y libpq-dev wget
 COPY --from=builder /usr/local/cargo/bin/papergraph /usr/local/bin/papergraph
 CMD ["papergraph"]
