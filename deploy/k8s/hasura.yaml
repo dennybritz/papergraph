@@ -24,13 +24,13 @@ spec:
             - containerPort: 8080
               name: http
           env:
-            - name: POSTGRES_PASSWORD
+            - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: papergraph-cred
-                  key: postgres-password
+                  name: papergraph-cloudsql
+                  key: password
             - name: HASURA_GRAPHQL_DATABASE_URL
-              value: postgres://papergraph:$(POSTGRES_PASSWORD)@papergraph-postgres:5432/papergraph
+              value: postgres://postgres:$(PGPASSWORD)@papergraph-cloudsql:5432/papergraph
             - name: HASURA_GRAPHQL_ENABLE_CONSOLE
               value: "true"
             - name: HASURA_GRAPHQL_ENABLED_LOG_TYPES

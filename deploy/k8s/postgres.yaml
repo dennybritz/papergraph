@@ -20,11 +20,12 @@ metadata:
   labels:
     app: papergraph
 spec:
+  storageClassName: faster
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 256Gi
+      storage: 128Gi
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -56,7 +57,8 @@ spec:
               name: postgres
           volumeMounts:
             - name: postgres-data
-              mountPath: /var/lib/postgresql
+              mountPath: /var/lib/postgresql/data
+              subPath: data
           env:
             - name: POSTGRES_PASSWORD
               valueFrom:

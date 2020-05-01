@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: papergraph-cloudsql
+  labels:
+    app: papergraph
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: papergraph
+    tier: cloudsql
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: papergraph-cloudsql
+  labels:
+    app: papergraph
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: papergraph
+      tier: cloudsql
+  template:
+    metadata:
+      labels:
+        app: papergraph
+        tier: cloudsql
+    spec:
+      volumes:
+        - name: papergraph-credentials
+          secret:
+            secretName: papergraph-sa-cred    
+      containers:
+        - name: cloudsql-proxy
+          image: gcr.io/cloudsql-docker/gce-proxy:1.16
+          command: ["/cloud_sql_proxy",
+                    "-instances=sideprojects-234609:us-central1:papergraph=tcp:0.0.0.0:5432",
+                    "-credential_file=/secrets/papergraph-sa.json"]
+          ports:
+            - containerPort: 5432
+              name: postgres                    
+          securityContext:
+            runAsUser: 2  # non-root user
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: papergraph-credentials
+              mountPath: /secrets
+              readOnly: true

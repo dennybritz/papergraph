@@ -9,7 +9,6 @@ spec:
     parameters:
     - name: cmd
       value: diesel print-schema
-
   templates:
   - name: run
     inputs:
@@ -20,13 +19,13 @@ spec:
       env:
         - name: RUST_LOG
           value: info
-        - name: POSTGRES_PASSWORD
+        - name: PGPASSWORD
           valueFrom:
             secretKeyRef:
-              name: papergraph-cred
-              key: postgres-password
+              name: papergraph-cloudsql
+              key: password
         - name: DATABASE_URL
-          value: postgres://papergraph:$(POSTGRES_PASSWORD)@papergraph-postgres:5432/papergraph
+          value: postgres://postgres:$(PGPASSWORD)@papergraph-cloudsql:5432/papergraph
       command: ["/bin/bash"]
       source: |
         {{inputs.parameters.cmd}}
