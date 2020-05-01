@@ -18,10 +18,7 @@ spec:
               parameters:
                 - name: cmd
                   value: |
-                    DROP INDEX IF EXISTS citations_from_paper_idx;
-                    DROP INDEX IF EXISTS citations_to_paper_idx;
                     ALTER TABLE papers SET UNLOGGED;
-                    ALTER TABLE citations SET UNLOGGED;
                     ALTER TABLE authors SET UNLOGGED;
                     ALTER TABLE paper_authors SET UNLOGGED;
         - - name: insert-all
@@ -224,11 +221,8 @@ spec:
                 - name: cmd
                   value: |
                     ALTER TABLE papers SET LOGGED;
-                    ALTER TABLE citations SET LOGGED;
                     ALTER TABLE authors SET LOGGED;
                     ALTER TABLE paper_authors SET LOGGED;
-                    CREATE INDEX citations_from_paper_idx ON citations (from_paper);
-                    CREATE INDEX citations_to_paper_idx ON citations (to_paper);
     - name: psql
       inputs:
         parameters:
