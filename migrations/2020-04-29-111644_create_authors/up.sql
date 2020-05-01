@@ -9,5 +9,5 @@ CREATE TABLE paper_authors (
   PRIMARY KEY(author_id, paper_id)
 );
 
--- CREATE INDEX paper_authors_author_id_idx ON paper_authors (author_id);
--- CREATE INDEX paper_authors_paper_id_idx ON paper_authors (paper_id);
+CREATE INDEX paper_authors_author_id_idx ON paper_authors (author_id);
+CREATE INDEX paper_authors_paper_id_idx ON paper_authors (paper_id);

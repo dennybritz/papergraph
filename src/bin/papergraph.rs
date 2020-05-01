@@ -74,7 +74,7 @@ fn insert(opts: Insert) {
                 .any(|fos| p.fields_of_study.contains(fos))
         });
 
-    for chunk in &records.chunks(4096) {
+    for chunk in &records.chunks(8192) {
         let mut batch = papergraph::db::utils::RecordBatch::new();
         let papers: Vec<Paper> = chunk.collect();
         for paper in papers.iter() {

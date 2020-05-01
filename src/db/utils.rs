@@ -14,7 +14,6 @@ pub struct RecordBatch<'a> {
     pub papers: Vec<models::Paper<'a>>,
     pub authors: Vec<models::Author<'a>>,
     pub paper_authors: Vec<models::PaperAuthor<'a>>,
-    pub citations: Vec<models::Citation<'a>>,
 }
 
 impl<'a> RecordBatch<'a> {
@@ -24,7 +23,6 @@ impl<'a> RecordBatch<'a> {
             papers: vec![],
             authors: vec![],
             paper_authors: vec![],
-            citations: vec![],
         }
     }
 
@@ -59,15 +57,6 @@ impl<'a> RecordBatch<'a> {
                 .execute(conn)?;
         }
 
-        log::info!("inserting {} citations", &self.citations.len());
-        for chunk in &self.citations.iter().chunks(chunk_size) {
-            let chunk: Vec<&models::Citation<'a>> = chunk.collect();
-            diesel::insert_into(schema::citations::table)
-                .values(chunk)
-                .on_conflict_do_nothing()
-                .execute(conn)?;
-        }
-
         return Ok(());
     }
 
@@ -76,7 +65,6 @@ impl<'a> RecordBatch<'a> {
         self.papers.append(&mut other.papers);
         self.authors.append(&mut other.authors);
         self.paper_authors.append(&mut other.paper_authors);
-        self.citations.append(&mut other.citations);
     }
 }
 
@@ -85,6 +73,8 @@ pub fn s2_record_to_batch<'a>(record: &'a crate::io::Paper) -> RecordBatch<'a> {
         id: &record.id,
         title: &record.title,
         year: record.year.map(|y| y as i16),
+        in_citations: &record.in_citations,
+        out_citations: &record.out_citations,
     };
 
     // TODO: Is it correct to filter out authors without ID!?
@@ -106,26 +96,9 @@ pub fn s2_record_to_batch<'a>(record: &'a crate::io::Paper) -> RecordBatch<'a> {
         })
         .collect();
 
-    let out_citations = record
-        .out_citations
-        .iter()
-        .map(|to_paper| models::Citation {
-            from_paper: &record.id,
-            to_paper: to_paper,
-        });
-    let in_citations = record
-        .in_citations
-        .iter()
-        .map(|from_paper| models::Citation {
-            from_paper: from_paper,
-            to_paper: &record.id,
-        });
-    let citations: Vec<models::Citation> = out_citations.chain(in_citations).collect();
-
     RecordBatch {
         papers: vec![paper],
         authors,
         paper_authors,
-        citations,
     }
 }

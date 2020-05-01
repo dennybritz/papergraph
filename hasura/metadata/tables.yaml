@@ -3,26 +3,6 @@
     name: authors
 - table:
     schema: public
-    name: citations
-  object_relationships:
-  - name: from
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: papers
-        column_mapping:
-          from_paper: id
-  - name: to
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: papers
-        column_mapping:
-          to_paper: id
-- table:
-    schema: public
     name: paper_authors
   object_relationships:
   - name: author
@@ -53,19 +33,18 @@
           name: paper_authors
         column_mapping:
           id: paper_id
-  - name: cited_by
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: citations
-        column_mapping:
-          id: to_paper
+  computed_fields:
   - name: cites
-    using:
-      manual_configuration:
-        remote_table:
-          schema: public
-          name: citations
-        column_mapping:
-          id: from_paper
+    definition:
+      function:
+        schema: public
+        name: cites
+      table_argument: null
+    comment: ""
+  - name: num_citations
+    definition:
+      function:
+        schema: public
+        name: num_citations
+      table_argument: null
+    comment: ""
