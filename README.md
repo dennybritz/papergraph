@@ -78,13 +78,13 @@ docker run --rm -it --network papergraph_default \
   papergraph insert -d /data/${DATA_PATH}
 ```
 
-Now that have seeded the database, we can also start the Hasura server. Stop the postgres docker process with `ctrl+c` and run
+Now that have seeded the database, we can also start Hasura to serve the graphql API. Stop the postgres docker process with `ctrl+c` and run
 
 ```bash
 docker-compose up
 ```
 
-You should now be able to access the API on `http://localhost:8080`.
+You should now be able to access the API via `http://localhost:8080`.
 
 
 ## Freshness
