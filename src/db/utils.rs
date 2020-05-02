@@ -1,5 +1,6 @@
 use diesel::pg::PgConnection;
 use diesel::prelude::*;
+use diesel::pg::upsert::excluded;
 use itertools::Itertools;
 
 pub use super::{models, schema};
@@ -28,15 +29,16 @@ impl<'a> RecordBatch<'a> {
 
     /// Inserts this RecordBatch into the database
     pub fn insert(&self, conn: &PgConnection) -> Result<(), diesel::result::Error> {
-        let chunk_size = 8192;
+        let chunk_size = 4096;
 
-        // TODO: Should we upsert here?
         log::info!("inserting {} papers", &self.papers.len());
         for papers in &self.papers.iter().chunks(chunk_size) {
             let papers: Vec<&models::Paper<'a>> = papers.collect();
             diesel::insert_into(schema::papers::table)
                 .values(papers)
-                .on_conflict_do_nothing()
+                .on_conflict(schema::papers::id)
+                .do_update()
+                .set(schema::papers::id.eq(excluded(schema::papers::id)))
                 .execute(conn)?;
         }
 
@@ -73,6 +75,13 @@ pub fn s2_record_to_batch<'a>(record: &'a crate::io::Paper) -> RecordBatch<'a> {
         id: &record.id,
         title: &record.title,
         year: record.year.map(|y| y as i16),
+        paper_abstract: &record.paper_abstract,
+        fields_of_study: &record.fields_of_study,
+        entities: &record.entities,
+        pdf_urls: &record.pdf_urls,
+        s2_url: &record.s2_url,
+        doi: &record.doi,
+        doi_url: &record.doi_url,
         in_citations: &record.in_citations,
         out_citations: &record.out_citations,
     };
