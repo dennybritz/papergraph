@@ -4,13 +4,7 @@ papergraph is a rust library and binary to build and manage a citation graph of 
 
 In the future, papergraph may ship with a frontend to interactively explore the graph.
 
-## Use Cases
-
-- **Finding landmark papers**  - Papers with a large citations may be considered landmark papers. The ideas in such papers often form the foundation for incremental improvements. Given some arbitrary paper you're interested in, you may want to know which landmark papers you should study for the required background knowledge.
-- **Reference research** - When writing a paper, you don't want to miss prior work. Looking through the citation graph for a related paper can help you find potentially interesting papers to read and cite.
-- **Graph Analysis** - Run sophisticated graph algorithms on the dataset to gain insights
-
-![Graph Example](notebooks/graph.svg)
+**Thanks** to [@ArtirKel](https://twitter.com/ArtirKel) for the useful feedback and ideas.
 
 ## Notebooks
 
@@ -20,6 +14,15 @@ The folllowing notebooks work out of the box using a publicly available API endp
   - Example to query the citation graph for a specific paper and analyze it with pandas
 - [Advanced Graph Analysis with networkx](notebooks/graph_analysis.ipynb) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/dennybritz/papergraph/blob/master/notebooks/graph_analysis.ipynb)
   - Uses [networkx](https://networkx.github.io/) to build and visualize the graph structure
+
+
+## Use Cases
+
+- **Finding landmark papers**  - Papers with a large citations may be considered landmark papers. The ideas in such papers often form the foundation for incremental improvements. Given some arbitrary paper you're interested in, you may want to know which landmark papers you should study for the required background knowledge.
+- **Reference research** - When writing a paper, you don't want to miss prior work. Looking through the citation graph for a related paper can help you find potentially interesting papers to read and cite.
+- **Graph Analysis** - Run sophisticated graph algorithms on the dataset to gain insights
+
+![Graph Example](notebooks/graph.svg)
 
 
 ## IMPORTANT! Using the public endpoint
