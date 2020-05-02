@@ -1,4 +1,21 @@
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: papergraph-hasura
+  # annotations:
+  #   cloud.google.com/neg: '{"ingress": true}' # Creates a NEG after an Ingress is created
+  labels:
+    app: papergraph
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    app: papergraph
+    tier: hasura
+  type: NodePort
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -23,6 +40,18 @@ spec:
           ports:
             - containerPort: 8080
               name: http
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            failureThreshold: 1
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 5        
           env:
             - name: PGPASSWORD
               valueFrom:
@@ -31,7 +60,11 @@ spec:
                   key: password
             - name: HASURA_GRAPHQL_DATABASE_URL
               value: postgres://postgres:$(PGPASSWORD)@papergraph-cloudsql:5432/papergraph
-            - name: HASURA_GRAPHQL_ENABLE_CONSOLE
-              value: "true"
             - name: HASURA_GRAPHQL_ENABLED_LOG_TYPES
               value: "startup, http-log, webhook-log, websocket-log, query-log"
+            # Disable console in production
+            - name: HASURA_GRAPHQL_ENABLE_CONSOLE
+              value: "false"
+            # Disable metadata and other APIs in production
+            - name: HASURA_GRAPHQL_ENABLED_APIS
+              value: graphql
