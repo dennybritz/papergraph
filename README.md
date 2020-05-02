@@ -46,15 +46,15 @@ Requirements:
 
 If you want to build the database from scratch, you must download the full [S2 research corpus](http://s2-public-api-prod.us-west-2.elasticbeanstalk.com/corpus/download/). The total compressed size is currently around ~120GB.
 
-```bash
-aws s3 sync --no-sign-request s3://ai2-s2-research-public/open-corpus/2020-04-10/ data/s2-research-corpus
-```
-
 Clone the repo
 
 ```bash
 git clone https://github.com/dennybritz/papergraph
 cd papergraph
+```
+
+```bash
+aws s3 sync --no-sign-request s3://ai2-s2-research-public/open-corpus/2020-04-10/ data/s2-research-corpus
 ```
 
 Start up an empty postgres database server and create the schema
