@@ -70,7 +70,7 @@ Now that we have a postgres server with the right database schema running, we ne
 DATA_PATH=data/s2-research-corpus/s2-corpus-017.gz
 
 # Repeat this for all files you want to insert
-# This will take a while
+# This will take a while. On my laptop, each file takes around 1min.
 docker run --rm -it --network papergraph_default \
   -e DATABASE_URL -e RUST_LOG \
   -v `pwd`/${DATA_PATH}:/data/${DATA_PATH} \
