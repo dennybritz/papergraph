@@ -4,7 +4,7 @@ papergraph is a rust library and binary to build and manage a citation graph of 
 
 In the future, papergraph may ship with a frontend to interactively explore the graph.
 
-**Thanks** to [@ArtirKel](https://twitter.com/ArtirKel) for the useful feedback and ideas.
+**Thanks to [@ArtirKel](https://twitter.com/ArtirKel) for the useful feedback and ideas.**
 
 ## Notebooks
 
