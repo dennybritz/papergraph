@@ -25,7 +25,7 @@ The folllowing notebooks work out of the box using a publicly available API endp
 
 The database is publicly available at `http://papergraph.dennybritz.com/v1/graphql`, so **please be gentle with your queries!** This is running on a small postgres server that I'm paying for, so please don't overload it with automated scripts. Be nice :) As long as you're running queries by hand through notebooks everything should be fine.
 
-If you want to do lots of queries you are better of cloning this repo and building the database yourself. Instructions for this are below.
+If you want to do lots of queries you should clone this repo and build the database yourself locally or in the cloud. Instructions for this are below. If you are running Kubernetes, you can also use the scripts in `deploy/`.
 
 ## Building the database from a postgresql snapshot
 
