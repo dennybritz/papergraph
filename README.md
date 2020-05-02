@@ -6,7 +6,7 @@ In the future, papergraph may ship with a frontend that allows you to interactiv
 
 ## Use Cases
 
-- **Finding landmark papers**  - Papers with a large citations may be considered landmark papers. The techniques describes in such papers often form the foundation of further incremental improvements. Given some arbitrary paper you're interested in, you may want to know which landmark papers you should study for the required background knowledge.
+- **Finding landmark papers**  - Papers with a large citations may be considered landmark papers. The ideas in such papers often form the foundation for incremental improvements. Given some arbitrary paper you're interested in, you may want to know which landmark papers you should study for the required background knowledge.
 - **Reference research** - When writing a paper, you don't want to miss prior work. Looking through the citation graph for a related paper can help you find potentially interesting papers to read and cite.
 - **Graph Analysis** - Run sophisticated graph algorithms on the dataset to gain insights
 
