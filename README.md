@@ -50,6 +50,13 @@ If you want to build the database from scratch, you must download the full [S2 r
 aws s3 sync --no-sign-request s3://ai2-s2-research-public/open-corpus/2020-04-10/ data/s2-research-corpus
 ```
 
+Clone the repo
+
+```bash
+git clone https://github.com/dennybritz/papergraph
+cd papergraph
+```
+
 Start up an empty postgres database server and create the schema
 
 ```bash
