@@ -34,3 +34,5 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE EXTENSION pg_trgm;
