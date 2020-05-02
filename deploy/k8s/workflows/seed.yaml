@@ -18,6 +18,8 @@ spec:
               parameters:
                 - name: cmd
                   value: |
+                    DROP INDEX IF EXISTS title_idx;
+                    DROP INDEX IF EXISTS title_trgm_idx;
                     ALTER TABLE papers SET UNLOGGED;
                     ALTER TABLE authors SET UNLOGGED;
                     ALTER TABLE paper_authors SET UNLOGGED;
@@ -223,6 +225,8 @@ spec:
                     ALTER TABLE papers SET LOGGED;
                     ALTER TABLE authors SET LOGGED;
                     ALTER TABLE paper_authors SET LOGGED;
+                    CREATE INDEX title_idx ON papers(title);
+                    CREATE INDEX title_trgm_idx ON papers USING GIST (title gist_trgm_ops);
     - name: psql
       inputs:
         parameters:
