@@ -32,7 +32,7 @@ If you want to do lots of queries you are better of cloning this repo and buildi
 
 <!-- The easiest way is to download an existing postgresql data dump (~2GB). To keep the size relatively small, this dataset only contains a subset of papers from Computer Science. Papers with no citations are excluded. -->
 
-TODO
+TODO. See [this issue](https://github.com/dennybritz/papergraph/issues/11)
 
 ## Building the database from scratch
 
