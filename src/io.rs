@@ -9,11 +9,13 @@ pub struct Paper {
     pub title: String,
     pub paper_abstract: String,
     pub fields_of_study: Vec<String>,
-    pub out_citations: Vec<String>,
-    pub in_citations: Vec<String>,
+    pub entities: Vec<String>,
+    pub pdf_urls: Vec<String>,
     pub s2_url: String,
     pub doi: String,
     pub doi_url: String,
+    pub out_citations: Vec<String>,
+    pub in_citations: Vec<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
