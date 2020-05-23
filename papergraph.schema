@@ -1,0 +1,37 @@
+type Paper {
+  paper_id
+  title
+  abstract
+  year
+  s2_url
+  doi
+  doi_url
+  pdf_urls
+  fields_of_study
+  entities
+
+  authors
+  cites  
+}
+
+<paper_id>: string @index(exact) .
+<title>: string @index(term) .
+<abstract>: string @index(term) .
+<year>: int @index(int) .
+<s2_url>: string .
+<doi>: string .
+<doi_url>: string .
+<pdf_urls>: [string] .
+<fields_of_study>: [string] .
+<entities>: [string] .
+
+<authors>: [uid] @reverse .
+<cites>: [uid] @count @reverse .
+
+type Author {
+  author_id
+  name
+}
+
+<author_id>: string @index(exact) .
+<name>: string @index(term) .
