@@ -54,6 +54,7 @@ pub fn s2_record_to_rdf_triples<'a>(record: &'a crate::io::Paper) -> Vec<String>
     let blank: &str = blank.as_ref();
 
     res.push(Triple::new(UID(blank), "<dgraph.type>", Literal("Paper")).str());
+    res.push(Triple::new(UID(blank), "<paper_id>", Literal(&record.id)).str());
     res.push(Triple::new(UID(blank), "<title>", Literal(&record.title)).str());
     res.push(Triple::new(UID(blank), "<abstract>", Literal(&record.paper_abstract)).str());
     if let Some(year) = record.year {
@@ -79,6 +80,7 @@ pub fn s2_record_to_rdf_triples<'a>(record: &'a crate::io::Paper) -> Vec<String>
             let author_blank = format!("_:{}", id);
             res.push(Triple::new(UID(&author_blank), "<dgraph.type>", Literal("Author")).str());
             res.push(Triple::new(UID(&author_blank), "<name>", Literal(&author.name)).str());
+            res.push(Triple::new(UID(&author_blank), "<author_id>", Literal(id)).str());
             res.push(Triple::new(UID(blank), "<authors>", UID(&author_blank)).str());
         }
     }
