@@ -16,7 +16,7 @@ type Paper {
 
 <paper_id>: string @index(exact) .
 <title>: string @index(term) .
-<abstract>: string @index(term) .
+<abstract>: string  .
 <year>: int @index(int) .
 <s2_url>: string .
 <doi>: string .
