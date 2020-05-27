@@ -10,6 +10,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
+  storageClassName: faster
   resources:
     requests:
       storage: 16Gi
@@ -100,7 +101,7 @@ spec:
             - "-c"
             - |
               set -ex
-              dgraph zero --my=localhost:5080
+              dgraph zero --my=localhost:5080 --ludicrous_mode
         - name: alpha
           image: dgraph/dgraph:v20.03.1
           imagePullPolicy: Always
@@ -122,7 +123,7 @@ spec:
             - "-c"
             - |
               set -ex
-              dgraph alpha --my=localhost:7080 --lru_mb 8192 --zero localhost:5080
+              dgraph alpha --my=localhost:7080 --lru_mb 8192 --zero localhost:5080 --ludicrous_mode
       terminationGracePeriodSeconds: 60
       volumes:
         - name: datadir
