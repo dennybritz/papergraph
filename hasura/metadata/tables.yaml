@@ -34,6 +34,13 @@
         column_mapping:
           id: paper_id
   computed_fields:
+  - name: num_citations
+    definition:
+      function:
+        schema: public
+        name: num_citations
+      table_argument: null
+    comment: ""
   - name: cites
     definition:
       function:
@@ -41,10 +48,10 @@
         name: cites
       table_argument: null
     comment: ""
-  - name: num_citations
+  - name: cited_by
     definition:
       function:
         schema: public
-        name: num_citations
+        name: cited_by
       table_argument: null
     comment: ""
