@@ -3,6 +3,7 @@ RETURNS SETOF papers AS $$
   SELECT p2.* FROM papers p1
   JOIN papers p2 ON p2.id=ANY(p1.out_citations)
   WHERE p1.id = paper_row.id AND p2.id != paper_row.id
+  ORDER BY array_length(p2.in_citations, 1) DESC
   LIMIT limit_
 $$ LANGUAGE SQL STABLE;
 

@@ -6,6 +6,8 @@ spec:
   # backend:
   #   serviceName: papergraph-hasura
   #   servicePort: 8080
+  tls:
+  - secretName: sslcerts  
   rules:
   - http:
       paths:
