@@ -1,0 +1,37 @@
+
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: papergraph-dgraph-
+spec:
+  entrypoint: run
+  arguments:
+    parameters:
+    - name: cmd
+      value: "echo hello world"
+  templates:
+  - name: run
+    tolerations:
+      - key: "preemptible"
+        operator: "Exists"
+        effect: "NoSchedule"
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+            - matchExpressions:
+                - key: cloud.google.com/gke-nodepool
+                  operator: In
+                  values:
+                    - preempt-1   
+    inputs:
+      parameters:
+      - name: cmd
+    script:
+      image: dgraph/dgraph:v20.03.1
+      env:
+        - name: DGRAPH_URL
+          value: papergraph-dgraph:8080
+      command: ["/bin/bash"]
+      source: |
+        {{inputs.parameters.cmd}}

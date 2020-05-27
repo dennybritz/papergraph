@@ -11,5 +11,5 @@ spec:
       paths:
       - path: /v1/graphql
         backend:
-          serviceName: papergraph-hasura
+          serviceName: papergraph-dgraph
           servicePort: 8080

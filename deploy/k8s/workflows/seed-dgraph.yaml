@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: papergraph-seed-
+spec:
+  entrypoint: seed-all
+  volumes:
+  - name: dgraph-xid
+    persistentVolumeClaim:
+      claimName: dgraph-xid
+  templates:
+    - name: seed-all
+      parallelism: 1
+      steps:
+        - - name: insert-all
+            template: insert
+            arguments:
+              parameters:
+                - name: url
+                  value: "{{item}}"
+            withItems:
+              # - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-000.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-001.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-002.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-003.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-004.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-005.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-006.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-007.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-008.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-009.gz
+              - https://s3-us-west-2.amazonaws.com/ai2-s2-research-public/open-corpus/2020-04-10/s2-corpus-010.gz              
+    - name: insert
+      inputs:
+        parameters:
+          - name: url
+      script:
+        image: dennybritz/papergraph:sha-f488b60
+        volumeMounts:
+        - name: dgraph-xid
+          mountPath: /dgraph-xid  
+        env:
+          - name: RUST_LOG
+            value: debug
+          - name: DATA_URL
+            value: "{{inputs.parameters.url}}"
+          - name: DGRAPH_HOST
+            value: papergraph-dgraph
+        command: ["/bin/bash"]
+        source: |
+          echo ${DATA_URL}
+          wget ${DATA_URL}
+
+          # Convert to triples
+          FILENAME=$(basename ${DATA_URL})
+          papergraph make-triples -d ${FILENAME} > ${FILENAME}.rdf
+
+          # Insert into dgraph
+          dgraph live \
+            -a ${DGRAPH_HOST}:9080 \
+            -z ${DGRAPH_HOST}:5080 \
+            -s papergraph.schema \
+            -f ${FILENAME}.rdf \
+            -x /dgraph-xid
