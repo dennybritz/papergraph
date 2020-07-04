@@ -2,7 +2,8 @@
 
 papergraph is a rust library and binary to build and manage a citation graph of [Semantic Scholar](https://www.semanticscholar.org/), focused on AI/ML papers (for now). Data is stored in a postgres database with a [Hasura](https://hasura.io/) GraphQL backend ([schema](hasura/schema.graphql)) on top for easy graph queries. It comes with Jupyter notebooks that show you how to analyze and visualize the data.
 
-In the future, papergraph may ship with a frontend to interactively explore the graph.
+
+**Live version at [https://papergraph.dbz.dev](https://papergraph.dbz.dev/)**
 
 **Thanks to [@ArtirKel](https://twitter.com/ArtirKel) for the useful feedback and ideas.**
 
